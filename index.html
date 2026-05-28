@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ATX Hill Country Car Shows 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@300;400;600;700&family=Barlow:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --burnt:   #BF5700;
+    --burnt-dk:#8C3D00;
+    --burnt-lt:#D96A00;
+    --amber:   #E07B20;
+    --ash:     #1A1A18;
+    --charcoal:#111110;
+    --smoke:   #2A2A27;
+    --dust:    #3D3D38;
+    --bone:    #E8E4DC;
+    --muted:   #8A8880;
+    --hill:    #2D3A1E;
+  }
+  *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+  html { scroll-behavior:smooth; }
+  body {
+    background: var(--charcoal);
+    color: var(--bone);
+    font-family: 'Barlow', sans-serif;
+    font-weight: 300;
+    overflow-x: hidden;
+  }
+  body::before {
+    content:'';
+    position:fixed; inset:0;
+    background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events:none; z-index:9999; opacity:0.35;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position:fixed; top:0; left:0; right:0; z-index:200;
+    display:flex; align-items:center; justify-content:space-between;
+    padding:1.25rem 3rem;
+    background:linear-gradient(to bottom,rgba(17,17,16,0.96),transparent);
+    transition:background 0.3s;
+  }
+  nav.scrolled { background:rgba(17,17,16,0.97); border-bottom:1px solid rgba(191,87,0,0.25); }
+  .nav-logo {
+    font-family:'Bebas Neue',sans-serif; font-size:1.5rem;
+    letter-spacing:0.12em; color:var(--bone); text-decoration:none;
+  }
+  .nav-logo span { color:var(--burnt); }
+  .nav-links { display:flex; gap:2.5rem; list-style:none; }
+  .nav-links a {
+    font-family:'Barlow Condensed',sans-serif; font-size:0.8rem;
+    font-weight:600; letter-spacing:0.15em; text-transform:uppercase;
+    color:var(--muted); text-decoration:none; transition:color 0.2s;
+  }
+  .nav-links a:hover { color:var(--burnt); }
+
+  /* ── HERO ── */
+  .hero {
+    position:relative; height:100vh; min-height:700px;
+    display:flex; flex-direction:column;
+    align-items:center; justify-content:center;
+    overflow:hidden; text-align:center;
+  }
+
+  /* rotating car photo slideshow */
+  .hero-slides {
+    position:absolute; inset:0; z-index:0;
+  }
+  .hero-slide {
+    position:absolute; inset:0;
+    background-size:cover; background-position:center;
+    opacity:0;
+    transition:opacity 1.8s ease-in-out;
+  }
+  .hero-slide.active { opacity:1; }
+
+  /* Using high-quality free Unsplash car images */
+  .slide-1 { background-image:url('https://images.unsplash.com/photo-1544636331-e26879cd4d9b?w=1600&auto=format&fit=crop&q=80'); }
+  .slide-2 { background-image:url('https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=1600&auto=format&fit=crop&q=80'); }
+  .slide-3 { background-image:url('https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=1600&auto=format&fit=crop&q=80'); }
+  .slide-4 { background-image:url('https://images.unsplash.com/photo-1525609004556-c46c7d6cf023?w=1600&auto=format&fit=crop&q=80'); }
+  .slide-5 { background-image:url('https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?w=1600&auto=format&fit=crop&q=80'); }
+
+  /* dark overlay so text reads clearly */
+  .hero-overlay {
+    position:absolute; inset:0; z-index:1;
+    background:
+      linear-gradient(180deg, rgba(17,17,16,0.55) 0%, rgba(17,17,16,0.3) 40%, rgba(17,17,16,0.7) 80%, rgba(17,17,16,0.97) 100%),
+      radial-gradient(ellipse 80% 60% at 50% 60%, rgba(45,58,30,0.2) 0%, transparent 70%);
+  }
+
+  /* road lines */
+  .road { position:absolute; bottom:0; left:50%; transform:translateX(-50%); width:300px; height:260px; overflow:hidden; z-index:2; }
+  .road-line { position:absolute; bottom:-20px; left:50%; transform:translateX(-50%); width:8px; background:var(--burnt-lt); animation:roadScroll 1.3s linear infinite; }
+  .road-line:nth-child(1) { height:60px; bottom:20px; opacity:0.6; animation-delay:0s; }
+  .road-line:nth-child(2) { height:50px; bottom:100px; width:6px; opacity:0.4; animation-delay:-0.43s; }
+  .road-line:nth-child(3) { height:35px; bottom:165px; width:4px; opacity:0.22; animation-delay:-0.86s; }
+  @keyframes roadScroll {
+    0%   { opacity:inherit; transform:translateX(-50%) scaleY(1); }
+    100% { opacity:0; transform:translateX(-50%) scaleY(0.3) translateY(40px); }
+  }
+
+  .hero-content { position:relative; z-index:3; }
+
+  .hero-eyebrow {
+    font-family:'Barlow Condensed',sans-serif; font-size:0.75rem;
+    font-weight:600; letter-spacing:0.3em; text-transform:uppercase;
+    color:var(--burnt-lt); margin-bottom:1.5rem;
+    opacity:0; animation:fadeUp 0.8s ease 0.3s forwards;
+  }
+  .hero-title {
+    font-family:'Bebas Neue',sans-serif;
+    font-size:clamp(5rem,14vw,13rem);
+    line-height:0.88; letter-spacing:0.02em; color:var(--bone);
+    opacity:0; animation:fadeUp 0.8s ease 0.5s forwards;
+    text-shadow: 0 4px 40px rgba(0,0,0,0.8);
+  }
+  .hero-title .line2 { color:transparent; -webkit-text-stroke:1.5px var(--burnt); display:block; }
+  .hero-title .line3 { display:block; color:var(--bone); }
+  .hero-sub {
+    margin-top:2rem;
+    font-family:'Barlow Condensed',sans-serif; font-size:1.1rem;
+    font-weight:300; letter-spacing:0.2em; text-transform:uppercase;
+    color:rgba(232,228,220,0.7);
+    opacity:0; animation:fadeUp 0.8s ease 0.7s forwards;
+  }
+  .hero-cta {
+    margin-top:3rem; display:flex; gap:1rem; justify-content:center;
+    opacity:0; animation:fadeUp 0.8s ease 0.9s forwards;
+  }
+
+  /* slide dots */
+  .hero-dots {
+    position:absolute; bottom:5rem; left:50%; transform:translateX(-50%);
+    display:flex; gap:8px; z-index:3;
+    opacity:0; animation:fadeIn 1s ease 1.5s forwards;
+  }
+  .dot {
+    width:6px; height:6px; border-radius:50%;
+    background:rgba(232,228,220,0.3); cursor:pointer;
+    transition:all 0.3s; border:none;
+  }
+  .dot.active { background:var(--burnt); transform:scale(1.4); }
+
+  .hero-scroll {
+    position:absolute; bottom:2rem; right:3rem;
+    display:flex; flex-direction:column; align-items:center; gap:0.5rem;
+    opacity:0; animation:fadeIn 1s ease 1.6s forwards; z-index:3;
+  }
+  .hero-scroll span {
+    font-family:'Barlow Condensed',sans-serif; font-size:0.62rem;
+    letter-spacing:0.25em; text-transform:uppercase; color:var(--muted);
+    writing-mode:vertical-rl;
+  }
+  .scroll-line {
+    width:1px; height:48px;
+    background:linear-gradient(to bottom,var(--burnt),transparent);
+    animation:scrollPulse 2s ease-in-out infinite;
+  }
+  @keyframes scrollPulse {
+    0%,100% { opacity:0.4; transform:scaleY(1); }
+    50%      { opacity:1;   transform:scaleY(0.6); }
+  }
+  @keyframes fadeUp {
+    from { opacity:0; transform:translateY(24px); }
+    to   { opacity:1; transform:translateY(0); }
+  }
+  @keyframes fadeIn {
+    from { opacity:0; } to { opacity:1; }
+  }
+
+  /* ── BUTTONS ── */
+  .btn {
+    font-family:'Barlow Condensed',sans-serif; font-size:0.8rem;
+    font-weight:700; letter-spacing:0.2em; text-transform:uppercase;
+    padding:0.9rem 2.2rem; text-decoration:none;
+    transition:all 0.25s; cursor:pointer; border:none; display:inline-block;
+  }
+  .btn-primary { background:var(--burnt); color:#fff; }
+  .btn-primary:hover { background:var(--burnt-dk); transform:translateY(-2px); }
+  .btn-outline { background:transparent; color:var(--bone); border:1px solid rgba(232,228,220,0.3); }
+  .btn-outline:hover { border-color:var(--burnt); color:var(--burnt); transform:translateY(-2px); }
+
+  /* ── SHARED SECTION STYLES ── */
+  .section-label {
+    font-family:'Barlow Condensed',sans-serif; font-size:0.7rem;
+    font-weight:600; letter-spacing:0.3em; text-transform:uppercase;
+    color:var(--burnt); margin-bottom:1rem;
+  }
+  .section-title {
+    font-family:'Bebas Neue',sans-serif;
+    font-size:clamp(3rem,6vw,5.5rem);
+    line-height:0.95; letter-spacing:0.03em; color:var(--bone); margin-bottom:1.5rem;
+  }
+  .divider {
+    height:1px;
+    background:linear-gradient(to right,transparent,var(--burnt),transparent);
+    opacity:0.3; margin:0 3rem;
+  }
+
+  /* ── ABOUT / STATS ── */
+  .intro {
+    padding:7rem 3rem; display:grid; grid-template-columns:1fr 1fr;
+    gap:6rem; max-width:1300px; margin:0 auto; align-items:center;
+  }
+  .intro-text p { font-size:1.05rem; line-height:1.85; color:#b0ada6; margin-bottom:1.2rem; }
+  .intro-text p strong { color:var(--bone); font-weight:500; }
+  .intro-stats { display:grid; grid-template-columns:1fr 1fr; gap:1.5px; background:var(--dust); }
+  .stat-box { background:var(--ash); padding:2.5rem 2rem; text-align:center; }
+  .stat-number { font-family:'Bebas Neue',sans-serif; font-size:4rem; color:var(--burnt); line-height:1; }
+  .stat-label {
+    font-family:'Barlow Condensed',sans-serif; font-size:0.75rem;
+    letter-spacing:0.2em; text-transform:uppercase; color:var(--muted); margin-top:0.4rem;
+  }
+
+  /* ── EVENTS ── */
+  .events-section { padding:6rem 3rem; max-width:1300px; margin:0 auto; }
+  .events-header { display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:3rem; flex-wrap:wrap; gap:1rem; }
+  .filter-tabs { display:flex; gap:0.5rem; flex-wrap:wrap; }
+  .tab {
+    font-family:'Barlow Condensed',sans-serif; font-size:0.75rem;
+    font-weight:600; letter-spacing:0.15em; text-transform:uppercase;
+    padding:0.5rem 1.2rem; background:transparent; color:var(--muted);
+    border:1px solid var(--dust); cursor:pointer; transition:all 0.2s;
+  }
+  .tab:hover { color:var(--bone); border-color:var(--muted); }
+  .tab.active { background:var(--burnt); color:#fff; border-color:var(--burnt); }
+  .events-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(340px,1fr)); gap:1.5px; background:var(--dust); }
+  .event-card { background:var(--ash); padding:2rem; transition:background 0.2s; display:flex; flex-direction:column; gap:0.75rem; }
+  .event-card:hover { background:var(--smoke); }
+  .event-card-top { display:flex; justify-content:space-between; align-items:flex-start; }
+  .event-date-block { font-family:'Bebas Neue',sans-serif; line-height:1; }
+  .event-date-block .day { font-size:3.5rem; color:var(--burnt); }
+  .event-date-block .month-yr { font-size:0.9rem; letter-spacing:0.1em; color:var(--muted); }
+  .event-badges { display:flex; flex-direction:column; gap:0.3rem; align-items:flex-end; }
+  .badge {
+    font-family:'Barlow Condensed',sans-serif; font-size:0.6rem;
+    font-weight:700; letter-spacing:0.15em; text-transform:uppercase; padding:0.25rem 0.6rem;
+  }
+  .badge-free  { background:rgba(45,58,30,0.8); color:#7EC85A; border:1px solid #7EC85A; }
+  .badge-nearby{ background:rgba(191,87,0,0.1); color:var(--burnt-lt); border:1px solid rgba(191,87,0,0.4); }
+  .badge-hot   { background:rgba(191,87,0,0.15); color:var(--burnt-lt); border:1px solid rgba(191,87,0,0.5); }
+  .event-name { font-family:'Barlow Condensed',sans-serif; font-size:1.25rem; font-weight:700; letter-spacing:0.03em; color:var(--bone); line-height:1.2; }
+  .event-meta { font-size:0.85rem; color:var(--muted); line-height:1.6; }
+  .event-location {
+    font-family:'Barlow Condensed',sans-serif; font-size:0.8rem;
+    letter-spacing:0.08em; color:#5A5A55;
+    padding-top:0.5rem; border-top:1px solid var(--dust);
+    display:flex; align-items:center; gap:0.4rem;
+  }
+  .event-location::before { content:'◈'; color:var(--burnt); font-size:0.65rem; }
+
+  /* ── RECURRING ── */
+  .recurring-section { padding:6rem 3rem; background:var(--ash); }
+  .recurring-inner { max-width:1300px; margin:0 auto; }
+  .recurring-grid { margin-top:3rem; display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:1.5px; background:var(--dust); }
+  .recur-card { background:var(--charcoal); padding:1.75rem 2rem; transition:background 0.2s; }
+  .recur-card:hover { background:var(--smoke); }
+  .recur-freq { font-family:'Bebas Neue',sans-serif; font-size:1.1rem; color:var(--burnt); letter-spacing:0.08em; margin-bottom:0.4rem; }
+  .recur-name { font-family:'Barlow Condensed',sans-serif; font-size:1.1rem; font-weight:600; color:var(--bone); margin-bottom:0.5rem; line-height:1.3; }
+  .recur-loc { font-size:0.8rem; color:#5A5A55; margin-top:0.75rem; padding-top:0.75rem; border-top:1px solid var(--dust); }
+
+  /* ── HILL BANNER ── */
+  .hill-banner { position:relative; padding:8rem 3rem; text-align:center; overflow:hidden; background:var(--charcoal); }
+  .hill-banner-bg {
+    position:absolute; inset:0;
+    background:
+      radial-gradient(ellipse 100% 80% at 50% 100%,rgba(45,58,30,0.4) 0%,transparent 60%),
+      radial-gradient(ellipse 60% 40% at 20% 50%,rgba(191,87,0,0.07) 0%,transparent 50%);
+  }
+  .hills-svg { position:absolute; bottom:0; left:0; right:0; height:180px; opacity:0.25; }
+  .hill-banner-content { position:relative; z-index:1; }
+  .hill-banner-title { font-family:'Bebas Neue',sans-serif; font-size:clamp(3.5rem,9vw,8rem); line-height:0.9; color:var(--bone); margin-bottom:1.5rem; }
+  .hill-banner-title em { font-style:normal; color:transparent; -webkit-text-stroke:1px var(--burnt); }
+  .hill-banner-sub { font-family:'Barlow',sans-serif; font-size:1rem; color:var(--muted); max-width:560px; margin:0 auto 2.5rem; line-height:1.8; }
+
+  /* ── CALENDAR ── */
+  .calendar-section { padding:6rem 3rem; max-width:1300px; margin:0 auto; }
+  .calendar-embed-wrapper { margin-top:3rem; background:var(--ash); border:1px solid var(--dust); overflow:hidden; }
+  .calendar-placeholder {
+    height:600px; display:flex; flex-direction:column;
+    align-items:center; justify-content:center; gap:1rem; color:var(--muted);
+    background:repeating-linear-gradient(45deg,var(--ash),var(--ash) 10px,rgba(42,42,39,0.5) 10px,rgba(42,42,39,0.5) 20px);
+  }
+  .calendar-placeholder-icon { font-family:'Bebas Neue',sans-serif; font-size:5rem; color:var(--dust); line-height:1; }
+  .calendar-placeholder p { font-family:'Barlow Condensed',sans-serif; font-size:0.85rem; letter-spacing:0.15em; text-transform:uppercase; color:var(--dust); }
+
+  /* ── FOOTER ── */
+  footer { background:#0A0A09; padding:4rem 3rem 2.5rem; border-top:1px solid rgba(191,87,0,0.15); }
+  .footer-inner { max-width:1300px; margin:0 auto; display:grid; grid-template-columns:2fr 1fr 1fr; gap:4rem; margin-bottom:3rem; }
+  .footer-brand-name { font-family:'Bebas Neue',sans-serif; font-size:2.2rem; letter-spacing:0.1em; color:var(--bone); margin-bottom:1rem; }
+  .footer-brand-name span { color:var(--burnt); }
+  .footer-tagline { font-size:0.9rem; color:var(--muted); line-height:1.7; max-width:280px; }
+  .footer-col-title { font-family:'Barlow Condensed',sans-serif; font-size:0.7rem; font-weight:700; letter-spacing:0.25em; text-transform:uppercase; color:var(--burnt); margin-bottom:1.25rem; }
+  .footer-links { list-style:none; display:flex; flex-direction:column; gap:0.6rem; }
+  .footer-links a { font-size:0.9rem; color:var(--muted); text-decoration:none; transition:color 0.2s; }
+  .footer-links a:hover { color:var(--bone); }
+  .footer-bottom { max-width:1300px; margin:0 auto; padding-top:1.5rem; border-top:1px solid var(--dust); display:flex; justify-content:space-between; align-items:center; }
+  .footer-bottom p { font-size:0.78rem; color:#3D3D38; font-family:'Barlow Condensed',sans-serif; letter-spacing:0.1em; }
+  .footer-bottom span { color:var(--burnt); }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width:900px) {
+    nav { padding:1rem 1.5rem; }
+    .nav-links { display:none; }
+    .intro { grid-template-columns:1fr; gap:3rem; padding:4rem 1.5rem; }
+    .events-section,.calendar-section { padding:4rem 1.5rem; }
+    .recurring-section { padding:4rem 1.5rem; }
+    .footer-inner { grid-template-columns:1fr; gap:2rem; }
+    footer { padding:3rem 1.5rem 2rem; }
+    .hill-banner { padding:5rem 1.5rem; }
+    .events-header { flex-direction:column; align-items:flex-start; }
+    .hero-scroll { display:none; }
+  }
+</style>
+</head>
+<body>
+
+<nav id="nav">
+  <a href="#" class="nav-logo">ATX <span>CAR</span> SCENE</a>
+  <ul class="nav-links">
+    <li><a href="#events">Events</a></li>
+    <li><a href="#recurring">Weekly Meets</a></li>
+    <li><a href="#calendar">Calendar</a></li>
+    <li><a href="#about">About</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <!-- rotating car photos -->
+  <div class="hero-slides">
+    <div class="hero-slide slide-1 active"></div>
+    <div class="hero-slide slide-2"></div>
+    <div class="hero-slide slide-3"></div>
+    <div class="hero-slide slide-4"></div>
+    <div class="hero-slide slide-5"></div>
+  </div>
+  <div class="hero-overlay"></div>
+  <div class="road">
+    <div class="road-line"></div>
+    <div class="road-line"></div>
+    <div class="road-line"></div>
+  </div>
+
+  <div class="hero-content">
+    <p class="hero-eyebrow">Austin Texas · Hill Country · 2026</p>
+    <h1 class="hero-title">
+      HILL
+      <span class="line2">COUNTRY</span>
+      <span class="line3">IRON</span>
+    </h1>
+    <p class="hero-sub">Cars. Community. Open Road.</p>
+    <div class="hero-cta">
+      <a href="#events" class="btn btn-primary">View Events</a>
+      <a href="#calendar" class="btn btn-outline">Full Calendar</a>
+    </div>
+  </div>
+
+  <div class="hero-dots" id="heroDots"></div>
+
+  <div class="hero-scroll">
+    <span>Scroll</span>
+    <div class="scroll-line"></div>
+  </div>
+</section>
+
+<!-- INTRO -->
+<section id="about">
+  <div class="intro">
+    <div class="intro-text">
+      <p class="section-label">Austin's Car Culture</p>
+      <h2 class="section-title">WHERE THE<br>HILL COUNTRY<br>MEETS THE ASPHALT</h2>
+      <p>From the winding FM roads of the Texas Hill Country to the world-class circuit at COTA, Austin is one of America's great automotive cities. This is where <strong>hot rods meet Lamborghinis</strong>, where burnouts echo off limestone bluffs, and where every weekend brings another reason to fire up the engine.</p>
+      <p>We track every show, meet, cruise-in, and gathering across Austin and the surrounding Hill Country — from the massive Heatwave weekend at COTA to the quiet Friday evenings at Sandy's in Lakeway.</p>
+      <a href="#events" class="btn btn-primary" style="margin-top:1rem;">See All Events</a>
+    </div>
+    <div class="intro-stats">
+      <div class="stat-box"><div class="stat-number">40+</div><div class="stat-label">Events Listed</div></div>
+      <div class="stat-box"><div class="stat-number">14</div><div class="stat-label">Recurring Meets</div></div>
+      <div class="stat-box"><div class="stat-number">12</div><div class="stat-label">Car Clubs</div></div>
+      <div class="stat-box"><div class="stat-number">52</div><div class="stat-label">Weeks of Events</div></div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- EVENTS -->
+<section id="events">
+  <div class="events-section">
+    <div class="events-header">
+      <div>
+        <p class="section-label">Upcoming Shows</p>
+        <h2 class="section-title">2026 EVENT CALENDAR</h2>
+      </div>
+      <div class="filter-tabs">
+        <button class="tab active" onclick="filterEvents('all',this)">All</button>
+        <button class="tab" onclick="filterEvents('june',this)">June</button>
+        <button class="tab" onclick="filterEvents('july',this)">July</button>
+        <button class="tab" onclick="filterEvents('august',this)">August</button>
+        <button class="tab" onclick="filterEvents('fall',this)">Fall</button>
+      </div>
+    </div>
+    <div class="events-grid" id="eventsGrid"></div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- HILL BANNER -->
+<div class="hill-banner">
+  <div class="hill-banner-bg"></div>
+  <svg class="hills-svg" viewBox="0 0 1440 180" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M0,180 L0,120 Q80,40 200,80 Q320,120 400,60 Q500,0 600,50 Q700,100 800,40 Q920,0 1040,70 Q1160,130 1260,60 Q1360,0 1440,80 L1440,180 Z" fill="#2D3A1E"/>
+    <path d="M0,180 L0,140 Q100,80 220,110 Q340,140 450,90 Q560,40 680,100 Q800,150 900,90 Q1020,30 1140,100 Q1260,160 1380,110 L1440,120 L1440,180 Z" fill="#1A2210" opacity="0.8"/>
+  </svg>
+  <div class="hill-banner-content">
+    <h2 class="hill-banner-title">THE OPEN<br><em>ROAD</em><br>AWAITS</h2>
+    <p class="hill-banner-sub">After the show, take FM 2222 or Lime Creek Road into the Hill Country. Some of the best driving roads in Texas are right in your backyard.</p>
+    <a href="#calendar" class="btn btn-primary">Plan Your Weekend</a>
+  </div>
+</div>
+
+<!-- RECURRING -->
+<section id="recurring">
+  <div class="recurring-section">
+    <div class="recurring-inner">
+      <p class="section-label">Every Week, Every Month</p>
+      <h2 class="section-title">RECURRING MEETS</h2>
+      <div class="recurring-grid" id="recurringGrid"></div>
+    </div>
+  </div>
+</section>
+
+<!-- CALENDAR -->
+<section id="calendar">
+  <div class="calendar-section">
+    <p class="section-label">Never Miss a Show</p>
+    <h2 class="section-title">FULL CALENDAR</h2>
+    <p style="color:var(--muted);font-size:0.95rem;max-width:560px;line-height:1.7;margin-bottom:0.5rem;">All events, recurring meets, and cruise-ins in one place. Updated regularly as new shows are announced.</p>
+    <div class="calendar-embed-wrapper">
+      <!-- REPLACE THIS BLOCK WITH YOUR GOOGLE CALENDAR IFRAME EMBED CODE -->
+      <div class="calendar-placeholder">
+        <div class="calendar-placeholder-icon">◈</div>
+        <p>Paste your Google Calendar embed code here</p>
+        <p style="font-size:0.7rem;color:#2A2A27;">Replace this block with your &lt;iframe&gt; from Google Calendar settings</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-inner">
+    <div>
+      <div class="footer-brand-name">ATX <span>CAR</span> SCENE</div>
+      <p class="footer-tagline">Austin's most complete guide to car shows, meets, cruise-ins, and gatherings across the city and Texas Hill Country.</p>
+    </div>
+    <div>
+      <p class="footer-col-title">Quick Links</p>
+      <ul class="footer-links">
+        <li><a href="#events">Upcoming Events</a></li>
+        <li><a href="#recurring">Recurring Meets</a></li>
+        <li><a href="#calendar">Full Calendar</a></li>
+        <li><a href="#about">About</a></li>
+      </ul>
+    </div>
+    <div>
+      <p class="footer-col-title">Find More Events</p>
+      <ul class="footer-links">
+        <li><a href="https://circuitoftheamericas.com/events/" target="_blank">COTA Events</a></li>
+        <li><a href="https://allevents.in/austin/car-shows" target="_blank">AllEvents Austin</a></li>
+        <li><a href="https://carcruisefinder.com/car-shows/tag/austin-tx/" target="_blank">CarCruiseFinder</a></li>
+        <li><a href="https://www.facebook.com/groups/933362963394497/" target="_blank">Austin TX Car Meets FB</a></li>
+        <li><a href="https://www.facebook.com/groups/1531287486907634/" target="_blank">ATXCS Facebook Group</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>© 2026 ATX Car Scene · Austin, Texas</p>
+    <p>Built for the <span>Hill Country</span> car community</p>
+  </div>
+</footer>
+
+<script>
+const events = [
+  { month:"JUN", day:"6",  name:"21st Annual Fredericksburg CarFest", meta:"Annual classic car show · All day", location:"Fredericksburg, TX", tags:["june"], nearby:true },
+  { month:"JUN", day:"7",  name:"Gumball 3000 Comes to Austin", meta:"6–9pm · Supercars & Superstars · Tour merchandise · Special guests", location:"Congress Avenue, Austin, TX", tags:["june"], hot:true },
+  { month:"JUN", day:"13", name:"28th Annual Chiggerfest — Show & Shine", meta:"10am–2pm · Free entry · Classics, muscle, vintage trucks", location:"Driftwood Chiggerfest, Driftwood, TX", tags:["june"], free:true, nearby:true },
+  { month:"JUN", day:"13", name:"Miles for Memories Cruise & Car Show", meta:"8:30am · Alzheimer's awareness · $20 pre-reg / $25 day-of", location:"Cypress Healthcare, San Marcos, TX", tags:["june"], nearby:true },
+  { month:"JUN", day:"13", name:"\"Back in My Day\" Classic & Custom Car Show", meta:"10am · All years & makes · Music, food · Free entry & parking", location:"Little Woodrow's Parmer Lane, Austin, TX", tags:["june"], free:true },
+  { month:"JUN", day:"16", name:"Rockpointe Church Car Show", meta:"Father's Day · 9am–12pm · Free · Food trucks, family fun", location:"Leander & Liberty Hill, TX", tags:["june"], free:true, nearby:true },
+  { month:"JUN", day:"20", name:"Redline Rodeo 2026", meta:"Doors 9pm · DJ lineup, live music, vendor market · Tickets online", location:"7704 FM S 973, Austin, TX", tags:["june"] },
+  { month:"JUN", day:"21", name:"Cars & Coffee at COTA", meta:"8am–12pm · Free to spectate · $12 to show your car", location:"Circuit of The Americas, Austin, TX", tags:["june"], free:true },
+  { month:"JUL", day:"4",  name:"Top Notch Hot Rod Night — 4th of July", meta:"5:30–9pm · Hot rods & classics · Live music · Free", location:"Top Notch, 7525 Burnet Rd, Austin, TX", tags:["july"], free:true },
+  { month:"JUL", day:"4",  name:"Cars & Coffee at Cowboy Harley-Davidson", meta:"9am–2pm · All makes welcome", location:"10917 S IH-35, Austin, TX", tags:["july"], free:true },
+  { month:"JUL", day:"11", name:"Battle at the Capital", meta:"5pm · Competition car show", location:"Travis County Expo Center, Austin, TX", tags:["july"] },
+  { month:"JUL", day:"17", name:"Corvette Invasion", meta:"Starts 8am · Annual Corvette gathering", location:"Bastrop, TX", tags:["july"], nearby:true },
+  { month:"JUL", day:"17", name:"Heatwave Car Show 2026", meta:"July 17–19 · Drifting · Burnout pit · Tattoo expo · Live music", location:"Circuit of The Americas, Austin, TX", tags:["july"], hot:true },
+  { month:"JUL", day:"19", name:"Cars & Coffee at COTA — July", meta:"8am–12pm · Free to spectate · $12 to show your car", location:"Circuit of The Americas, Austin, TX", tags:["july"], free:true },
+  { month:"AUG", day:"1",  name:"Cars & Coffee at Cowboy Harley-Davidson", meta:"9am–2pm · All makes welcome", location:"10917 S IH-35, Austin, TX", tags:["august"], free:true },
+  { month:"AUG", day:"15", name:"Summer Slash", meta:"Starts 11am · Car show & competition", location:"Travis County Expo Center, Austin, TX", tags:["august"] },
+  { month:"AUG", day:"16", name:"Cars & Coffee at COTA — August", meta:"8am–12pm · Free to spectate · $12 to show your car", location:"Circuit of The Americas, Austin, TX", tags:["august"], free:true },
+  { month:"SEP", day:"6",  name:"WEC Exotic Parade Lap", meta:"The Exotics Network · FIA World Endurance Championship", location:"Circuit of The Americas, Austin, TX", tags:["fall"], hot:true },
+  { month:"OCT", day:"21", name:"Road to the Race", meta:"4th annual · Official US Grand Prix prelude · World-class showcase", location:"Circuit of The Americas, Austin, TX", tags:["fall"], hot:true },
+  { month:"OCT", day:"TBD",name:"Gearhead's Open Car Show", meta:"9am–1pm · Free · Live auction, food, vendors", location:"Cabela's, Buda, TX", tags:["fall"], free:true, nearby:true },
+];
+
+const recurring = [
+  { freq:"Every 2nd Tuesday", name:"Austin TX Car Meets", meta:"8–10pm · All builds welcome · Est. 2015", location:"AutoZone, 6500 Springdale Rd, Austin", free:true },
+  { freq:"Every 2nd Sunday",  name:"Octane at the Oasis", meta:"8–11am · All cars welcome · Coffee onsite", location:"The Oasis at Lake Travis, Austin", free:true },
+  { freq:"Every 3rd Sunday",  name:"Cars & Coffee at COTA", meta:"8am–12pm · Free to spectate · $12 to show", location:"Circuit of The Americas, Austin", free:true },
+  { freq:"Every 1st Saturday",name:"Top Notch Hot Rod Nights — Austin", meta:"5:30–9pm · Hot rods, classics, live music", location:"Top Notch, 7525 Burnet Rd, Austin", free:true },
+  { freq:"Every 2nd Saturday",name:"Top Notch Hot Rod Nights — Hutto", meta:"5:30–9pm · Free", location:"121 Co-op Blvd, Hutto, TX", free:true },
+  { freq:"Every 3rd Saturday",name:"Top Notch Vintage VW Night", meta:"5:30–9pm · Free", location:"Top Notch, 7525 Burnet Rd, Austin", free:true },
+  { freq:"Every 3rd Friday",  name:"Chrome Nights", meta:"7–9pm · Free", location:"Top Notch, 7525 Burnet Rd, Austin", free:true },
+  { freq:"Last Friday Monthly",name:"Hoyt's Garage Car Meet", meta:"7–10pm · Good cars, good people, good vibes", location:"2301 Airport Rd, Georgetown, TX", free:true },
+  { freq:"Every 3rd Sunday",  name:"Round Rock Car Show", meta:"9am–12pm · Free · All makes welcome", location:"301 W Bagdad, Round Rock, TX", free:true },
+  { freq:"Every 1st Sunday",  name:"Coffee & Cars — Wimberley", meta:"8–11am · Free · Hosted by 12 Kings Texas", location:"14200 RR 12, Wimberley, TX", free:true },
+  { freq:"Every 3rd Saturday",name:"Storm's Monthly Cruise-In", meta:"5–8pm (Mar–Oct) · All welcome · Weather permitting", location:"700 N Water St, Burnet, TX", free:true },
+  { freq:"Every 4th Saturday",name:"Freddy's Classic Car Cruise-In", meta:"5–9pm · Piston Knockers Texas", location:"2602 W Pecan St, Pflugerville, TX" },
+  { freq:"Every Tuesday",     name:"Dubs in Austin (VW & Audi)", meta:"8pm · Casual weekly meet", location:"Draught House Pub, 4112 Medical Pkwy", free:true },
+  { freq:"Every Friday",      name:"Lakeway Friday Car Club", meta:"1pm onwards · All makes · Year-round", location:"Sandy's Drive In, RR 620, Lakeway, TX", free:true },
+];
+
+/* ── slideshow ── */
+const slides = document.querySelectorAll('.hero-slide');
+const dotsContainer = document.getElementById('heroDots');
+let current = 0, timer;
+
+slides.forEach((_, i) => {
+  const d = document.createElement('button');
+  d.className = 'dot' + (i===0?' active':'');
+  d.setAttribute('aria-label', 'Slide '+(i+1));
+  d.addEventListener('click', () => goTo(i));
+  dotsContainer.appendChild(d);
+});
+
+function goTo(n) {
+  slides[current].classList.remove('active');
+  dotsContainer.children[current].classList.remove('active');
+  current = (n + slides.length) % slides.length;
+  slides[current].classList.add('active');
+  dotsContainer.children[current].classList.add('active');
+  clearInterval(timer);
+  timer = setInterval(() => goTo(current + 1), 5000);
+}
+timer = setInterval(() => goTo(current + 1), 5000);
+
+/* ── events ── */
+let currentFilter = 'all';
+function filterEvents(tag, btn) {
+  currentFilter = tag;
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  renderEvents();
+}
+function renderEvents() {
+  const grid = document.getElementById('eventsGrid');
+  const filtered = currentFilter==='all' ? events : events.filter(e=>e.tags.includes(currentFilter));
+  grid.innerHTML = filtered.map(e=>`
+    <div class="event-card">
+      <div class="event-card-top">
+        <div class="event-date-block">
+          <div class="day">${e.day}</div>
+          <div class="month-yr">${e.month} 2026</div>
+        </div>
+        <div class="event-badges">
+          ${e.hot    ? '<span class="badge badge-hot">🔥 Don\'t Miss</span>' : ''}
+          ${e.free   ? '<span class="badge badge-free">Free</span>'           : ''}
+          ${e.nearby ? '<span class="badge badge-nearby">Nearby</span>'       : ''}
+        </div>
+      </div>
+      <div class="event-name">${e.name}</div>
+      <div class="event-meta">${e.meta}</div>
+      <div class="event-location">${e.location}</div>
+    </div>`).join('');
+}
+function renderRecurring() {
+  document.getElementById('recurringGrid').innerHTML = recurring.map(r=>`
+    <div class="recur-card">
+      <div class="recur-freq">${r.freq}</div>
+      <div class="recur-name">${r.name}${r.free?'<span class="badge badge-free" style="font-size:.55rem;padding:.2rem .5rem;vertical-align:middle;margin-left:6px">Free</span>':''}</div>
+      <div class="event-meta">${r.meta}</div>
+      <div class="recur-loc">◈ ${r.location}</div>
+    </div>`).join('');
+}
+
+/* ── nav scroll ── */
+window.addEventListener('scroll',()=>{
+  document.getElementById('nav').classList.toggle('scrolled', window.scrollY>60);
+});
+
+/* ── scroll-reveal ── */
+const observer = new IntersectionObserver(entries=>{
+  entries.forEach(e=>{ if(e.isIntersecting){ e.target.style.opacity='1'; e.target.style.transform='translateY(0)'; } });
+},{threshold:0.08});
+
+renderEvents(); renderRecurring();
+setTimeout(()=>{
+  document.querySelectorAll('.event-card,.recur-card,.stat-box').forEach((c,i)=>{
+    c.style.opacity='0'; c.style.transform='translateY(20px)';
+    c.style.transition=`opacity .5s ease ${i*.04}s,transform .5s ease ${i*.04}s`;
+    observer.observe(c);
+  });
+},100);
+</script>
+</body>
+</html>
